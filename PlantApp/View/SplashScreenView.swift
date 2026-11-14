@@ -60,7 +60,19 @@ struct SplashScreenView: View {
                     .fontWeight(.bold)
                     .padding(.top, 100)
                     
-                } else {
+                
+            } else if viewModel.allWatered {
+               Spacer()
+                VStack(spacing: 8){
+                    Text("All Done! 🎉")
+                        .foregroundStyle(.white)
+                        .fontWeight(.bold)
+                        .font(.title)
+                    Text("All Reminders Completed")
+                        .foregroundStyle(.gray)
+                }
+            }
+                else {
                     VStack {
                         Text(viewModel.wateredCount == 0 ? "Your plants are waiting for a sip 💦" : "\(viewModel.wateredCount) of your plants feel loved today ✨")
                             .foregroundStyle(.white)
@@ -75,25 +87,30 @@ struct SplashScreenView: View {
                         List(viewModel.plants) { plant in
                             PlantRowView(plant: plant, viewModel: viewModel)
                                 .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+                                .swipeActions {
+                                    Button(role: .destructive) {
+                                        viewModel.deletePlant(plant)
+                                    } label: {
+                                        Image(systemName: "trash")
+                                    }
+                                }
                         }
                         .listStyle(.plain)
                         .scrollContentBackground(.hidden)
-                        .overlay(alignment: .bottomTrailing) {
-                            Button {
-                                showSheet = true
-                            } label: {
-                                Image(systemName: "plus")
-                                    .frame(width:48, height:48)
-                                    .glassEffect(.regular.tint(Color(red: 0.29, green: 0.5, blue: 0.41)))
-                                    .foregroundStyle(.white)
-                                    .fontWeight(.bold)
-                                    .font(.title2)
-                            } .padding()
-                        }
+                        
                     }
                 }
 
                 Spacer()
+                
+            } .overlay(alignment: .bottomTrailing) {
+                if !viewModel.plants.isEmpty {
+                    AddPlantButton {
+                        showSheet = true
+                    }
+                    
+                }
+                
             }
              
     

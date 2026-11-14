@@ -35,4 +35,14 @@ class PlantViewModel {
         return count
     }
     
+    var allWatered: Bool {
+        !plants.isEmpty && wateredCount == plants.count
+    }
+    
+    func deletePlant( _ plant: Plant) {
+        plants.removeAll { item in
+            item.id == plant.id
+        }
+    }
+    
 }
