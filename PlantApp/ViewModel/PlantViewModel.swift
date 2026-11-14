@@ -45,4 +45,12 @@ class PlantViewModel {
         }
     }
     
+    func updatePlant(_ updated: Plant) {
+        for index in plants.indices {
+            if plants[index].id == updated.id {
+                plants[index] = updated
+            }
+        }
+    }
+    
 }

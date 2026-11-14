@@ -11,6 +11,7 @@ struct SetReminderView: View {
     
     @Environment(\.dismiss) private var dismiss
     var viewModel: PlantViewModel
+    var plantToEdit: Plant? = nil
     @State private var plantName = ""
     @State private var room = "Bedroom"
     let rooms = ["Bedroom", "Kitchen", "Living room"]
@@ -43,16 +44,25 @@ struct SetReminderView: View {
                 Spacer()
                 
                 Button {
-                    //adding action later
-                    let newPlant = Plant(name: plantName, room: room, light: light, wateringDays: wateringDay, water: water)
-                    viewModel.addPlant(newPlant)
-                    dismiss()
+                    if var plant = plantToEdit {
+                            plant.name = plantName
+                            plant.room = room
+                            plant.light = light
+                            plant.wateringDays = wateringDay
+                            plant.water = water
+                            viewModel.updatePlant(plant)
+                        } else {
+                            let newPlant = Plant(name: plantName, room: room, light: light, wateringDays: wateringDay, water: water)
+                            viewModel.addPlant(newPlant)
+                        }
+                        dismiss()
                 } label: {
                     Image(systemName: "checkmark")
                         .frame(width: 44, height: 44)
                         .glassEffect(.regular.tint(Color(red: 0.29, green: 0.5, blue: 0.4)))
                         .foregroundStyle(.white)
-                }
+                } .disabled(plantName.isEmpty)
+                    .opacity(plantName.isEmpty ? 0.4 : 1)
             } .padding(.horizontal)
                 .padding(.top)
             
@@ -126,8 +136,28 @@ struct SetReminderView: View {
             .clipShape(RoundedRectangle(cornerRadius: 25))
             .padding(.horizontal)
            
+            if let plant = plantToEdit {
+                Button("Delete Reminder", role: .destructive) {
+                    viewModel.deletePlant((plant))
+                    dismiss()
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.gray.opacity(0.2))
+                .clipShape(RoundedRectangle(cornerRadius: 25))
+                .padding(.horizontal) 
+            }
             Spacer()
         } .ignoresSafeArea(.keyboard)
+            .onAppear {
+                if let plant = plantToEdit {
+                    plantName = plant.name
+                    room = plant.room
+                    light = plant.light
+                    wateringDay = plant.wateringDays
+                    water = plant.water
+                }
+            }
     }
 }
 

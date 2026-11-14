@@ -14,4 +14,5 @@ struct Plant: Identifiable {
     var wateringDays: String
     var water: String
     var isWatered: Bool = false
+    
 }

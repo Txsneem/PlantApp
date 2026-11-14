@@ -7,9 +7,10 @@
 
 import SwiftUI
 
-struct SplashScreenView: View {
+struct MyPlantsView: View {
     @State private var showSheet = false
     @State private var viewModel = PlantViewModel()
+    @State private var selectedPlant: Plant?
     var body: some View {
         ZStack{
             Color.black
@@ -87,6 +88,9 @@ struct SplashScreenView: View {
                         List(viewModel.plants) { plant in
                             PlantRowView(plant: plant, viewModel: viewModel)
                                 .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+                                .onTapGesture {
+                                    selectedPlant = plant
+                                }
                                 .swipeActions {
                                     Button(role: .destructive) {
                                         viewModel.deletePlant(plant)
@@ -97,6 +101,9 @@ struct SplashScreenView: View {
                         }
                         .listStyle(.plain)
                         .scrollContentBackground(.hidden)
+                        .sheet(item: $selectedPlant) { plant in
+                            SetReminderView(viewModel: viewModel, plantToEdit: plant)
+                        }
                         
                     }
                 }
@@ -122,5 +129,5 @@ struct SplashScreenView: View {
 }
 
 #Preview {
-    SplashScreenView()
+    MyPlantsView()
 }
