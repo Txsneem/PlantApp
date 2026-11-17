@@ -14,11 +14,11 @@ struct SetReminderView: View {
     var plantToEdit: Plant? = nil
     @State private var plantName = ""
     @State private var room = "Bedroom"
-    let rooms = ["Bedroom", "Kitchen", "Living room"]
+    let rooms = ["Bedroom", "Living room", "Kitchen", "Balcony", "Bathroom"]
     @State private var light = "Full sun"
     let lights = ["Full sun", "Partial sun", "Low light"]
     @State private var wateringDay = "Every day"
-    let wateringDays = ["Every day", "Every 2 days", "Every 3 days", "Once a week"]
+    let wateringDays = ["Every day", "Every 2 days", "Every 3 days", "Once a week", "Every 10 days", "Every 2 weeks"]
     @State private var water = "20-50 ml"
     let waters = ["20-50 ml", "50-100 ml", "100-200 ml", "200-300 ml"]
    
@@ -54,6 +54,8 @@ struct SetReminderView: View {
                         } else {
                             let newPlant = Plant(name: plantName, room: room, light: light, wateringDays: wateringDay, water: water)
                             viewModel.addPlant(newPlant)
+                            viewModel.requestNotificationPermission()
+                            viewModel.scheduleReminder(for: newPlant)
                         }
                         dismiss()
                 } label: {

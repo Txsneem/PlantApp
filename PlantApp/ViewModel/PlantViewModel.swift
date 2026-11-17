@@ -6,6 +6,7 @@
 //
 
 import Observation
+import UserNotifications
 
 @Observable
 class PlantViewModel {
@@ -39,7 +40,8 @@ class PlantViewModel {
         !plants.isEmpty && wateredCount == plants.count
     }
     
-    func deletePlant( _ plant: Plant) {
+    func deletePlant(_ plant: Plant) {
+        cancelReminders(for: plant)
         plants.removeAll { item in
             item.id == plant.id
         }
@@ -51,6 +53,55 @@ class PlantViewModel {
                 plants[index] = updated
             }
         }
+        cancelReminders(for: updated)
+        scheduleReminder(for: updated)
+    }
+    
+    func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+            print("Permission granted: \(granted)")
+        }
+    }
+    
+    func scheduleReminder(for plant: Plant) {
+        let content = UNMutableNotificationContent()
+        content.title = "Planto"
+        content.body = "Hey! let's water your plant"
+        content.sound = .default
+        
+        if plant.daysBetweenWatering == 1 {
+            var time = DateComponents()
+            time.hour = 10
+            time.minute = 0
+            
+            let trigger = UNCalendarNotificationTrigger(dateMatching: time, repeats: true)
+            let request = UNNotificationRequest(identifier: plant.id.uuidString, content: content, trigger: trigger)
+            UNUserNotificationCenter.current().add(request)
+        } else {
+            for occurrence in 1...10 {
+                let daysAhead = occurrence * plant.daysBetweenWatering
+                
+                if let date = Calendar.current.date(byAdding: .day, value: daysAhead, to: Date()) {
+                    var time = Calendar.current.dateComponents([.year, .month, .day], from: date)
+                            time.hour = 10
+                            time.minute = 0
+                    
+                    let trigger = UNCalendarNotificationTrigger(dateMatching: time, repeats: false)
+                            let request = UNNotificationRequest(identifier: "\(plant.id.uuidString)-\(occurrence)", content: content, trigger: trigger)
+                            UNUserNotificationCenter.current().add(request)
+                }
+            }
+        }
+    }
+    
+    func cancelReminders(for plant: Plant) {
+        var identifiers = [plant.id.uuidString]
+
+        for occurrence in 1...10 {
+            identifiers.append("\(plant.id.uuidString)-\(occurrence)")
+        }
+
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
     }
     
 }

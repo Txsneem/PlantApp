@@ -30,9 +30,10 @@ struct MyPlantsView: View {
                     .overlay(Color.gray)
                 
                 if viewModel.plants.isEmpty {
-                    Image(systemName: "leaf")
-                        .font(.system(size:100))
-                        .foregroundStyle(.green)
+                    Image("plantillust")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 180, height: 180)
                         .padding(.top, 130)
                     
                     Text("Start your plant journey!")
@@ -65,6 +66,13 @@ struct MyPlantsView: View {
             } else if viewModel.allWatered {
                Spacer()
                 VStack(spacing: 8){
+                    
+                    Image("plantillustration2")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 180, height: 180)
+                     
+                        .padding()
                     Text("All Done! 🎉")
                         .foregroundStyle(.white)
                         .fontWeight(.bold)
@@ -72,6 +80,7 @@ struct MyPlantsView: View {
                     Text("All Reminders Completed")
                         .foregroundStyle(.gray)
                 }
+                Spacer()
             }
                 else {
                     VStack {
